@@ -1,0 +1,44 @@
+digraph G {
+  graph [rankdir=LR, fontname="DejaVu Sans", fontsize=13, pad=0.3, nodesep=0.35, ranksep=0.55, bgcolor="white",
+         label="Geladeira Solidaria Inteligente - arquitetura IoT e fluxo de rede", labelloc=t, fontsize=17];
+  node  [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", fillcolor="#ffffff", color="#5b6b7a"];
+  edge  [fontname="DejaVu Sans", fontsize=9.5, color="#5b6b7a"];
+
+  subgraph cluster_sens { label="1. Percepcao (dentro da geladeira)"; style="rounded,filled"; fillcolor="#eaf4ec"; color="#9cc5a6";
+    dht  [label="DHT22\ntemperatura e umidade"];
+    peso [label="Celula de carga + HX711\npeso -> ocupacao"];
+    porta[label="Sensor magnetico da porta\n(chave no Wokwi)"];
+    botao[label="Botao 'Silenciar'\n(voluntario)"];
+  }
+  subgraph cluster_borda { label="2. Borda (edge)"; style="rounded,filled"; fillcolor="#e8f0fa"; color="#9db6d6";
+    esp [label="ESP32 DevKit C\nregras.h decide OK/INFO/ATENCAO/CRITICO\nfila offline de 15 mensagens\ncontagem de uso da porta (IoB)", fillcolor="#d6e6f8"];
+    saidas [label="LEDs verde/amarelo/vermelho\nbuzzer  |  LCD 16x2 I2C"];
+  }
+  subgraph cluster_rede { label="3. Rede"; style="rounded,filled"; fillcolor="#fdf3e3"; color="#e0bf85";
+    wifi [label="Wi-Fi 2.4 GHz\n(Wokwi-GUEST)"];
+    rot  [label="Roteador / NAT\nInternet"];
+    broker [label="Broker MQTT\nbroker.hivemq.com:1883\n(TCP, publish/subscribe)", fillcolor="#fbe3b8"];
+  }
+  subgraph cluster_app { label="4. Aplicacao (projetos das outras disciplinas)"; style="rounded,filled"; fillcolor="#f3ecf9"; color="#bfa6d9";
+    ponte [label="Ponte MQTT -> API\n(Python, paho-mqtt)\nhistorico.csv"];
+    api   [label="API Java Spring Boot\nPOST /api/leituras (JWT, papel SENSOR)\nRN2: > 8 C abre alerta"];
+    db    [label="PostgreSQL\nleitura_sensor, alerta", shape=cylinder];
+    app   [label="App Mobile (Flutter)\nmapa, situacao, alertas"];
+    ia    [label="resumo_ia.py\nIA generativa (Claude)\nboletim para voluntarios"];
+  }
+
+  dht -> esp [label="1-wire digital\nGPIO 15"];
+  peso -> esp [label="DT/SCK\nGPIO 16 / 4"];
+  porta -> esp [label="GPIO 27\nINPUT_PULLUP"];
+  botao -> esp [label="GPIO 14"];
+  esp -> saidas [label="GPIO 26/25/33/32\nI2C 21/22"];
+  esp -> wifi [label="802.11 b/g/n"];
+  wifi -> rot;
+  rot -> broker [label="TCP 1883\nMQTT 3.1.1, QoS 0\nLWT 'offline' retained"];
+  broker -> ponte [label="assina .../+/#"];
+  broker -> esp [label=".../comando\n(silenciar, intervalo, tara)", style=dashed, constraint=false];
+  ponte -> api [label="HTTP REST + JSON\nBearer JWT"];
+  api -> db [label="JPA"];
+  app -> api [label="HTTP REST"];
+  ponte -> ia [label="CSV com indicadores", style=dashed];
+}
