@@ -7,7 +7,7 @@
 |---|---|---|
 | Ruan Ribeiro | 567693 | 2TDSPA |
 
-**Simulação no Wokwi:** _colar aqui o link do projeto salvo no Wokwi_
+**Simulação no Wokwi:** https://wokwi.com/projects/480908095408093185
 
 ---
 
@@ -136,7 +136,9 @@ Geladeira 3:
 4. Clique na setinha ao lado das abas → **New file** → `regras.h`, e cole o conteúdo de `firmware/regras.h`.
 5. Na aba **Library Manager**, adicione as 4 bibliotecas de `firmware/libraries.txt`: `DHT sensor library for ESPx`, `HX711`, `LiquidCrystal I2C` e `PubSubClient`.
 6. Clique em **▶** (Start). No Serial Monitor deve aparecer `[WiFi] conectando...` e, em alguns segundos, `[MQTT] conectado`.
-7. Clique em **Save** e cole o link do projeto no topo deste README.
+7. Clique em **Save** para guardar o projeto na sua conta.
+
+Para só ver a simulação pronta, abra o [projeto salvo no Wokwi](https://wokwi.com/projects/480908095408093185) e clique em **▶**.
 
 **Como mexer nos sensores durante a simulação:** clique no DHT22 para mudar temperatura e umidade; clique na célula de carga para mudar o peso; clique na chave para abrir ou fechar a porta; clique no botão azul para silenciar.
 
@@ -176,7 +178,7 @@ Resultado esperado: `Resultado: 48 de 48 verificacoes passaram`.
 
 ## 9. Casos de teste
 
-### 9.1 No Wokwi (com prints em `docs/evidencias/`)
+### 9.1 No Wokwi (prints na seção 12)
 
 | # | Como testar | Resultado esperado |
 |---|---|---|
@@ -246,18 +248,55 @@ A ponte também foi testada com um broker Mosquitto local, reenviando as mensage
 
 ## 12. Evidências
 
-Prints em `docs/evidencias/`:
+Prints da simulação no Wokwi e do cliente web da HiveMQ, guardados em `docs/evidencias/`.
 
-- [ ] Circuito montado no Wokwi
-- [ ] Serial Monitor com Wi-Fi e MQTT conectados
-- [ ] HiveMQ recebendo telemetria e `status` online
-- [ ] Alerta crítico de temperatura (LED vermelho aceso)
-- [ ] Porta esquecida aberta (LCD "FECHE A PORTA")
-- [ ] Mensagem de uso (IoB)
-- [ ] Comando de intervalo funcionando
-- [ ] Ponte salvando leituras na API (se rodar a API Java)
-- [ ] Boletim do `resumo_ia.py`
-- [ ] Testes automatizados com 48 de 48
+### 01. Circuito montado
+
+ESP32, DHT22, HX711 com a célula de carga, chave da porta, botão Silenciar, LEDs, buzzer e LCD.
+
+![Circuito montado no Wokwi](docs/evidencias/01_circuito.png)
+
+### 02. Wi-Fi e MQTT conectados (CT01)
+
+O Serial mostra `[MQTT] conectado` e as 2 mensagens guardadas na fila offline sendo enviadas logo depois. A balança ainda estava em 0 kg, por isso o aviso `ESTOQUE_BAIXO` (verde + amarelo).
+
+![Serial Monitor com MQTT conectado](docs/evidencias/02_serial_mqtt_conectado.png)
+
+### 03. Telemetria chegando no HiveMQ (CT02 e CT05)
+
+Com 12,5 kg na balança, a telemetria passa para `OK` com 25% de ocupação, e chega o alerta "Geladeira voltou ao normal".
+
+![HiveMQ recebendo telemetria](docs/evidencias/03_hivemq_telemetria.png)
+
+### 04. Alerta crítico de temperatura (CT03)
+
+Com 9,5 °C, o LED vermelho acende, o LCD mostra "TEMP ALTA!" e a telemetria sai com `CRITICO / TEMPERATURA`.
+
+![Alerta crítico de temperatura](docs/evidencias/04_alerta_temperatura.png)
+
+### 05. Uso da porta, IoB (CT06 e CT07)
+
+Os eventos `ABRIU` e `FECHOU` com a duração, e o resumo da janela de uso: 4 aberturas, média de 3,2 s e movimento `PICO`.
+
+![Mensagem de uso no HiveMQ](docs/evidencias/05_iob_uso.png)
+
+### 06. Porta esquecida aberta (CT06)
+
+Com 60 s de porta aberta, o LED amarelo acende, o LCD mostra "FECHE A PORTA" e a telemetria sai com `ATENCAO / PORTA_ABERTA`.
+
+![Porta esquecida aberta](docs/evidencias/06_porta_aberta.png)
+
+### 07. Comando remoto de intervalo (CT09)
+
+Depois do comando `{"acao":"intervalo","segundos":5}` publicado no HiveMQ, o Serial mostra `[CMD] telemetria a cada 5 s` e a telemetria passa a sair de 5 em 5 s.
+
+![Comando de intervalo](docs/evidencias/07_comando_intervalo.png)
+
+### 08. Geladeira lotada (CT08)
+
+Com 46 kg (92%), acendem verde + amarelo, com `INFO / CAPACIDADE` e sem buzzer. O resumo de uso dessa janela registra 1 esquecimento de porta.
+
+![Geladeira lotada](docs/evidencias/08_capacidade.png)
 
 ## 13. Estrutura
 
@@ -277,7 +316,7 @@ testes/
 └── stubs/              versões falsas das bibliotecas de hardware
 docs/
 ├── arquitetura.png     diagrama de arquitetura e rede (fonte: arquitetura.dot)
-└── evidencias/         prints da simulação
+└── evidencias/         prints da simulação (seção 12)
 ```
 
 ## 14. Uso de IA generativa
