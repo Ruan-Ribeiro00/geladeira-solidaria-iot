@@ -1,0 +1,10 @@
+# Segredos e dados gerados
+ponte/.env
+ponte/historico*.csv
+__pycache__/
+*.pyc
+
+# Saidas do teste no PC
+testes/simulacao
+testes/simulacao.exe
+testes/publicacoes.txt

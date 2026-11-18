@@ -1,0 +1,5 @@
+# Bibliotecas do projeto no Wokwi (aba "Library Manager")
+DHT sensor library for ESPx
+HX711
+LiquidCrystal I2C
+PubSubClient

@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "author": "Ruan Ribeiro - RM 567693 - 2TDSPA",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -105.3, "left": -158.4, "attrs": { "temperature": "4.5", "humidity": "62" } },
+    { "type": "wokwi-hx711", "id": "cell1", "top": 290, "left": -250, "attrs": { "type": "50kg" } },
+    { "type": "wokwi-slide-switch", "id": "porta", "top": 230, "left": 200, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 300, "left": 200, "attrs": { "color": "blue", "label": "Silenciar" } },
+    { "type": "wokwi-led", "id": "ledVerde", "top": -60, "left": 230, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "ledAmarelo", "top": -60, "left": 270, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "ledVermelho", "top": -60, "left": 310, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 30, "left": 220, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 30, "left": 260, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": 30, "left": 300, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": 120, "left": 360, "attrs": { "volume": "0.1" } },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -260, "left": 80, "attrs": { "pins": "i2c" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+
+    [ "dht1:VCC", "esp:3V3", "red", [] ],
+    [ "dht1:GND", "esp:GND.1", "black", [] ],
+    [ "dht1:SDA", "esp:15", "green", [] ],
+
+    [ "cell1:VCC", "esp:5V", "red", [] ],
+    [ "cell1:GND", "esp:GND.1", "black", [] ],
+    [ "cell1:DT", "esp:16", "orange", [] ],
+    [ "cell1:SCK", "esp:4", "purple", [] ],
+
+    [ "porta:2", "esp:27", "blue", [] ],
+    [ "porta:1", "esp:GND.2", "black", [] ],
+
+    [ "btn1:1.l", "esp:14", "cyan", [] ],
+    [ "btn1:2.l", "esp:GND.2", "black", [] ],
+
+    [ "esp:26", "r1:1", "green", [] ],
+    [ "r1:2", "ledVerde:A", "green", [] ],
+    [ "ledVerde:C", "esp:GND.2", "black", [] ],
+
+    [ "esp:25", "r2:1", "yellow", [] ],
+    [ "r2:2", "ledAmarelo:A", "yellow", [] ],
+    [ "ledAmarelo:C", "esp:GND.2", "black", [] ],
+
+    [ "esp:33", "r3:1", "red", [] ],
+    [ "r3:2", "ledVermelho:A", "red", [] ],
+    [ "ledVermelho:C", "esp:GND.2", "black", [] ],
+
+    [ "bz1:2", "esp:32", "magenta", [] ],
+    [ "bz1:1", "esp:GND.2", "black", [] ],
+
+    [ "lcd1:VCC", "esp:5V", "red", [] ],
+    [ "lcd1:GND", "esp:GND.1", "black", [] ],
+    [ "lcd1:SDA", "esp:21", "green", [] ],
+    [ "lcd1:SCL", "esp:22", "gold", [] ]
+  ],
+  "dependencies": {}
+}
